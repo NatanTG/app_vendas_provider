@@ -1,19 +1,4 @@
-## Provider x GetIt: O que deve ser reativo?
 
-**Provider (reativo):**
-Use Provider para expor objetos que mudam e precisam atualizar a UI automaticamente:
-- Controllers que estendem ChangeNotifier (ProductsController, CartController, OrdersController, AuthController)
-- Qualquer model que muda e afeta a interface
-
-**GetIt (singleton/injeção):**
-Use GetIt para objetos que não mudam ou não precisam atualizar a UI:
-- Services (ProductsService, OrdersService, AuthService)
-- Helpers, utilitários, repositórios, clients de API
-- Configurações globais, temas, loggers
-
-**Resumo prático:**
-- Provider: Controllers e modelos que mudam e afetam a interface
-- GetIt: Services, helpers, singletons que não precisam reatividade
 
 # Vendas App (provider_impl_app)
 
@@ -119,3 +104,21 @@ Projeto pronto para evoluir com Provider para gerenciamento de estado global.
 ## Observações
 - Certifique-se de que o Firebase está corretamente configurado para seu app.
 - Para dúvidas, consulte este README ou a documentação dos pacotes utilizados.
+
+
+## Provider x GetIt: O que deve ser reativo?
+
+**Provider (reativo):**
+Use Provider para expor objetos que mudam e precisam atualizar a UI automaticamente:
+- Controllers que estendem ChangeNotifier (ProductsController, CartController, OrdersController, AuthController)
+- Qualquer model que muda e afeta a interface
+
+**GetIt (singleton/injeção):**
+Use GetIt para objetos que não mudam ou não precisam atualizar a UI:
+- Services (ProductsService, OrdersService, AuthService)
+- Helpers, utilitários, repositórios, clients de API
+- Configurações globais, temas, loggers
+
+**Resumo prático:**
+- Provider: Controllers e modelos que mudam e afetam a interface
+- GetIt: Services, helpers, singletons que não precisam reatividade
