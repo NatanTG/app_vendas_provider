@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/cart_item_model.dart';
 
-/// Controller do carrinho
 class CartController extends ChangeNotifier {
   final List<CartItemModel> _items;
 

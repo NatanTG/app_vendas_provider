@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../orders/controllers/orders_controller.dart';
 import '../../orders/models/order_model.dart';
 import '../controllers/cart_controller.dart';
+import 'package:provider/provider.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -14,13 +15,12 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   bool _isProcessing = false;
   String? _error;
-  late final CartController _controller;
+  late CartController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = CartController();
-    _controller.addListener(_onCartChanged);
+    _controller = context.read<CartController>();
   }
 
   @override
@@ -37,32 +37,33 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
+    final cartController = context.watch<CartController>();
     return Scaffold(
       appBar: AppBar(title: const Text('Carrinho')),
-      body: _controller.items.isEmpty
+      body: cartController.items.isEmpty
           ? const Center(child: Text('Seu carrinho está vazio'))
           : ListView.builder(
-              itemCount: _controller.items.length,
+              itemCount: cartController.items.length,
               itemBuilder: (context, index) {
-                final item = _controller.items[index];
+                final item = cartController.items[index];
                 return ListTile(
                   leading: Image.network(item.image, width: 48, height: 48, fit: BoxFit.cover),
                   title: Text(item.title),
                   subtitle: Text('Qtd: ${item.quantity} | R\$ ${item.price.toStringAsFixed(2)}'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
-                    onPressed: () => _controller.removeItem(item.productId.toString()),
+                    onPressed: () => cartController.removeItem(item.productId.toString()),
                   ),
                 );
               },
             ),
-      bottomNavigationBar: _controller.items.isNotEmpty
+      bottomNavigationBar: cartController.items.isNotEmpty
           ? Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Total: R\$ ${_controller.total.toStringAsFixed(2)}', style: const TextStyle(fontSize: 18)),
+                  Text('Total: R\$ ${cartController.total.toStringAsFixed(2)}', style: const TextStyle(fontSize: 18)),
                   ElevatedButton(
                     onPressed: _isProcessing
                         ? null
@@ -77,12 +78,12 @@ class _CartPageState extends State<CartPage> {
                               final orderController = OrdersController();
                               final order = OrderModel(
                                 id: DateTime.now().millisecondsSinceEpoch.toString(),
-                                items: _controller.items,
-                                total: _controller.total,
+                                items: cartController.items,
+                                total: cartController.total,
                                 date: DateTime.now(),
                               );
                               await orderController.addOrder(order);
-                              _controller.clear();
+                              cartController.clear();
                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Compra finalizada!')));
                               Navigator.pushNamed(context, '/orders');
                             } catch (e) {
