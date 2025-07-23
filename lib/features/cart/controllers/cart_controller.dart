@@ -10,6 +10,7 @@ class CartController extends ChangeNotifier {
 
   CartController({List<CartItemModel>? initialItems}) : _items = initialItems ?? [];
 
+
   void addItem(CartItemModel item) {
     final index = _items.indexWhere((i) => i.productId == item.productId);
     if (index >= 0) {
@@ -20,7 +21,25 @@ class CartController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeItem(String productId) {
+  void incrementItem(int productId) {
+    final index = _items.indexWhere((i) => i.productId == productId);
+    if (index >= 0) {
+      _items[index].quantity++;
+      notifyListeners();
+    }
+  }
+
+  void decrementItem(int productId) {
+    final index = _items.indexWhere((i) => i.productId == productId);
+    if (index >= 0 && _items[index].quantity > 1) {
+      _items[index].quantity--;
+      notifyListeners();
+    } else if (index >= 0 && _items[index].quantity == 1) {
+      removeItem(productId);
+    }
+  }
+
+  void removeItem(int productId) {
     _items.removeWhere((i) => i.productId == productId);
     notifyListeners();
   }

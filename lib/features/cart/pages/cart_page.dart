@@ -50,9 +50,23 @@ class _CartPageState extends State<CartPage> {
                   leading: Image.network(item.image, width: 48, height: 48, fit: BoxFit.cover),
                   title: Text(item.title),
                   subtitle: Text('Qtd: ${item.quantity} | R\$ ${item.price.toStringAsFixed(2)}'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => cartController.removeItem(item.productId.toString()),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () => cartController.decrementItem(item.productId),
+                      ),
+                      Text('${item.quantity}', style: const TextStyle(fontSize: 16)),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () => cartController.incrementItem(item.productId),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => cartController.removeItem(item.productId),
+                      ),
+                    ],
                   ),
                 );
               },
