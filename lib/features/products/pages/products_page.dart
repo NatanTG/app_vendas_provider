@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import '../../cart/controllers/cart_controller.dart';
 import '../../cart/models/cart_item_model.dart';
 import '../controllers/products_controller.dart';
@@ -13,47 +13,37 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
-  late final ProductsController _controller;
-  final getIt = GetIt.instance;
-
   @override
   void initState() {
     super.initState();
-    // Usando get_it para injeção de dependência
-    _controller = getIt<ProductsController>();
-    _controller.addListener(_onProductsChanged);
-    _controller.fetchProducts();
+    // O ProductsController já está disponível via Provider
+    Future.microtask(() {
+      context.read<ProductsController>().fetchProducts();
+    });
   }
-
-  @override
-  void dispose() {
-    _controller.removeListener(_onProductsChanged);
-    super.dispose();
-  }
-
-  void _onProductsChanged() => setState(() {});
 
   int get cartCount {
-    final cartController = getIt<CartController>();
+    final cartController = context.watch<CartController>();
     return cartController.items.fold(0, (sum, item) => sum + item.quantity);
   }
 
   @override
   Widget build(BuildContext context) {
+    final productsController = context.watch<ProductsController>();
+    final cartController = context.watch<CartController>();
     return Scaffold(
       appBar: AppBar(title: const Text('Produtos')),
-      body: _controller.isLoading
+      body: productsController.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _controller.error != null
-              ? Center(child: Text(_controller.error!))
+          : productsController.error != null
+              ? Center(child: Text(productsController.error!))
               : ListView.builder(
-                  itemCount: _controller.products.length,
+                  itemCount: productsController.products.length,
                   itemBuilder: (context, index) {
-                    final product = _controller.products[index];
+                    final product = productsController.products[index];
                     return ProductCard(
                       product: product,
                       onTap: () {
-                        final cartController = getIt<CartController>();
                         cartController.addItem(
                           CartItemModel(
                             productId: product.id,
@@ -62,9 +52,12 @@ class _ProductsPageState extends State<ProductsPage> {
                             image: product.image,
                           ),
                         );
-                        setState(() {});
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${product.title} adicionado ao carrinho!')),
+                          SnackBar(
+                            content: Text(
+                              '${product.title} adicionado ao carrinho!',
+                            ),
+                          ),
                         );
                       },
                     );
@@ -90,7 +83,11 @@ class _ProductsPageState extends State<ProductsPage> {
                 constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
                 child: Text(
                   '$cartCount',
-                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
