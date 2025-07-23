@@ -1,4 +1,3 @@
-import 'package:provider_impl_app/shared/widgets/app_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,8 +34,7 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<OrdersController>();
-    return AppScaffold(
-      title: 'Pedidos',
+    return Scaffold(
       body: controller.isLoading
           ? const Center(child: CircularProgressIndicator())
           : controller.orders.isEmpty
