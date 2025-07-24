@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import '../../auth/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/orders_controller.dart';
@@ -16,19 +16,9 @@ class _OrdersPageState extends State<OrdersPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-    final userId = _getUserId();
-    if (userId != null) {
-        Provider.of<OrdersController>(context, listen: false).fetchOrders(userId);
-    }
+      final controller = context.read<OrdersController>();
+      controller.loadUserOrders(context);
     });
-  }
-
-  String? _getUserId() {
-    try {
-      return FirebaseAuth.instance.currentUser?.uid;
-    } catch (_) {
-      return null;
-    }
   }
 
   @override
