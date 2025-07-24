@@ -11,7 +11,7 @@ class CheckoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartController = context.watch<CartController>();
-    final authController = Provider.of<AuthController>(context, listen: false);
+    final authController = context.read<AuthController>();
     return Scaffold(
       appBar: AppBar(title: const Text('Checkout')),
       body: Padding(
