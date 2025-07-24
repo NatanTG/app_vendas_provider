@@ -37,6 +37,13 @@ class _ProductsPageState extends State<ProductsPage> {
         title: const Text('Produtos'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.list_alt),
+            tooltip: 'Ver pedidos',
+            onPressed: () {
+              Navigator.pushNamed(context, '/orders-list');
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
             onPressed: () async {
