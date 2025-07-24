@@ -21,6 +21,11 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
     try {
       _user = await _authService.signIn(email, password);
+      // Atualiza o usuário após login, mas sem chamar notifyListeners duas vezes
+      final current = _authService.currentUser;
+      if (current != null) {
+        _user = current;
+      }
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -35,6 +40,10 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
     try {
       _user = await _authService.signUp(email, password);
+      final current = _authService.currentUser;
+      if (current != null) {
+        _user = current;
+      }
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -46,11 +55,18 @@ class AuthController extends ChangeNotifier {
   Future<void> signOut() async {
     await _authService.signOut();
     _user = null;
+    _error = null;
     notifyListeners();
   }
 
+  /// Atualiza o usuário autenticado, mas só chama notifyListeners se houver mudança real.
   void loadCurrentUser() {
-    _user = _authService.currentUser;
-    notifyListeners();
+    Future.microtask(() {
+      final current = _authService.currentUser;
+      if (current?.uid != _user?.uid) {
+        _user = current;
+        notifyListeners();
+      }
+    });
   }
 }
