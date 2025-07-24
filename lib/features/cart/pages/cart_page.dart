@@ -18,7 +18,7 @@ class _CartPageState extends State<CartPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Garante que o usuário está carregado ao entrar na tela
-    final authController = Provider.of<AuthController>(context, listen: false);
+    final authController = context.read<AuthController>();
     authController.loadCurrentUser();
   }
   bool _isProcessing = false;
@@ -46,8 +46,8 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     final cartController = context.watch<CartController>();
-    final authController = Provider.of<AuthController>(context, listen: false);
-    final orderController = Provider.of<OrdersController>(context, listen: false);
+    final authController = context.read<AuthController>();
+    final orderController = context.read<OrdersController>();
     return Scaffold(
       appBar: AppBar(title: const Text('Carrinho')),
       body: cartController.items.isEmpty
