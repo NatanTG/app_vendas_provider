@@ -17,21 +17,16 @@ class _ProductsPageState extends State<ProductsPage> {
   @override
   void initState() {
     super.initState();
-    // O ProductsController já está disponível via Provider
     Future.microtask(() {
       context.read<ProductsController>().fetchProducts();
     });
-  }
-
-  int get cartCount {
-    final cartController = context.watch<CartController>();
-    return cartController.items.fold(0, (sum, item) => sum + item.quantity);
   }
 
   @override
   Widget build(BuildContext context) {
     final productsController = context.watch<ProductsController>();
     final cartController = context.watch<CartController>();
+    final cartCount = cartController.items.fold(0, (sum, item) => sum + item.quantity);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Produtos'),
@@ -86,9 +81,10 @@ class _ProductsPageState extends State<ProductsPage> {
                         cartController.addItem(
                           CartItemModel(
                             productId: product.id,
-                            title: product.title,
+                            name: product.title,
                             price: product.price,
-                            image: product.image,
+                            imageUrl: product.image,
+                            quantity: 1,
                           ),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(

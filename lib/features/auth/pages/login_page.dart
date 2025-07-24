@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/login_form.dart';
 
@@ -10,35 +11,23 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+
 class _LoginPageState extends State<LoginPage> {
-  late final AuthController _controller;
+  bool _navigated = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AuthController();
-    _controller.addListener(_onAuthChanged);
-    _controller.loadCurrentUser();
-  }
-
-  @override
-  void dispose() {
-    _controller.removeListener(_onAuthChanged);
-    super.dispose();
-  }
-
-  void _onAuthChanged() {
-    if (_controller.user != null) {
+  void _handleAuthChange(AuthController controller) {
+    if (!_navigated && controller.user != null) {
+      _navigated = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushReplacementNamed(context, '/products');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login realizado com sucesso!')),
         );
       });
-    } else if (_controller.error != null) {
+    } else if (controller.error != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_controller.error!),),
+          SnackBar(content: Text(controller.error!),),
         );
       });
     }
@@ -46,19 +35,24 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: LoginForm(
-            onLogin: (email, password) => _controller.signIn(email, password),
-            onSignUp: (email, password) => _controller.signUp(email, password),
-            isLoading: _controller.isLoading,
-            error: _controller.error,
+    return Consumer<AuthController>(
+      builder: (context, controller, _) {
+        _handleAuthChange(controller);
+        return Scaffold(
+          appBar: AppBar(title: const Text('Login')),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: LoginForm(
+                onLogin: (email, password) => controller.signIn(email, password),
+                onSignUp: (email, password) => controller.signUp(email, password),
+                isLoading: controller.isLoading,
+                error: controller.error,
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

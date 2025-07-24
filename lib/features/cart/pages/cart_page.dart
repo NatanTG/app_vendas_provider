@@ -14,34 +14,8 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Garante que o usuário está carregado ao entrar na tela
-    final authController = context.read<AuthController>();
-    authController.loadCurrentUser();
-  }
   bool _isProcessing = false;
   String? _error;
-  late CartController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = context.read<CartController>();
-  }
-
-  @override
-  void dispose() {
-    _controller.removeListener(_onCartChanged);
-    super.dispose();
-  }
-
-  void _onCartChanged() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +32,12 @@ class _CartPageState extends State<CartPage> {
                 final item = cartController.items[index];
                 return ListTile(
                   leading: Image.network(
-                    item.image,
+                    item.imageUrl,
                     width: 48,
                     height: 48,
                     fit: BoxFit.cover,
                   ),
-                  title: Text(item.title),
+                  title: Text(item.name),
                   subtitle: Text(
                     'Qtd: ${item.quantity} | R\$ ${item.price.toStringAsFixed(2)}',
                   ),
@@ -131,7 +105,7 @@ class _CartPageState extends State<CartPage> {
                                   content: Text('Compra finalizada!'),
                                 ),
                               );
-                              Navigator.pushNamed(context, '/orders');
+                              Navigator.pushNamed(context, '/products');
                             } catch (e) {
                               if (mounted) {
                                 setState(() {

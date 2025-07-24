@@ -12,6 +12,7 @@ class CheckoutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartController = context.watch<CartController>();
     final authController = context.read<AuthController>();
+    final checkoutController = context.read<CheckoutController>();
     return Scaffold(
       appBar: AppBar(title: const Text('Checkout')),
       body: Padding(
@@ -27,8 +28,8 @@ class CheckoutPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final item = cartController.items[index];
                   return ListTile(
-                    leading: Image.network(item.image, width: 40, height: 40, fit: BoxFit.cover),
-                    title: Text(item.title),
+                    leading: Image.network(item.imageUrl, width: 40, height: 40, fit: BoxFit.cover),
+                    title: Text(item.name),
                     subtitle: Text('Qtd: ${item.quantity} | R\$ ${item.price.toStringAsFixed(2)}'),
                   );
                 },
@@ -48,7 +49,6 @@ class CheckoutPage extends StatelessWidget {
                     );
                     return;
                   }
-                  final checkoutController = CheckoutController();
                   try {
                     await checkoutController.saveTransaction(
                       items: cartController.items,
@@ -59,7 +59,8 @@ class CheckoutPage extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Compra finalizada!')),
                     );
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+                    // Volta para a tela de produtos e impede voltar para o checkout
+                    Navigator.of(context).pushNamedAndRemoveUntil('/products', (route) => false);
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Erro ao finalizar compra: $e')),

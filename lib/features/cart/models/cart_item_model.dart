@@ -1,36 +1,36 @@
 /// Modelo de item do carrinho
 class CartItemModel {
   final int productId;
-  final String title;
-  final double price;
-  final String image;
   int quantity;
+  final double price;
+  final String name;
+  final String imageUrl;
 
   CartItemModel({
     required this.productId,
-    required this.title,
+    required this.quantity,
     required this.price,
-    required this.image,
-    this.quantity = 1,
+    required this.name,
+    required this.imageUrl,
   });
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     return CartItemModel(
       productId: json['productId'] as int,
-      title: json['title'] as String,
+      quantity: json['quantity'] as int,
       price: (json['price'] as num).toDouble(),
-      image: json['image'] as String,
-      quantity: json['quantity'] as int? ?? 1,
+      name: json['name'] as String? ?? '',
+      imageUrl: json['imageUrl'] as String? ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
-      'title': title,
-      'price': price,
-      'image': image,
       'quantity': quantity,
+      'price': price,
+      'name': name,
+      'imageUrl': imageUrl,
     };
   }
 }

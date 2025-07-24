@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/orders_controller.dart';
+import '../widgets/orders_list_view.dart';
 
 class OrdersListPage extends StatefulWidget {
   const OrdersListPage({super.key});
@@ -14,8 +15,7 @@ class _OrdersListPageState extends State<OrdersListPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      final controller = context.read<OrdersController>();
-      controller.loadUserOrders(context);
+      context.read<OrdersController>().loadUserOrders(context);
     });
   }
 
@@ -23,25 +23,18 @@ class _OrdersListPageState extends State<OrdersListPage> {
   Widget build(BuildContext context) {
     final controller = context.watch<OrdersController>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Meus Pedidos')),
-      body: controller.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : controller.orders.isEmpty
-              ? const Center(child: Text('Nenhum pedido encontrado'))
-              : ListView.builder(
-                  itemCount: controller.orders.length,
-                  itemBuilder: (context, index) {
-                    final order = controller.orders[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: ListTile(
-                        title: Text('Pedido: ${order.id}'),
-                        subtitle: Text('Total: R\$ ${order.total.toStringAsFixed(2)}'),
-                        trailing: Text(order.date.toString()),
-                      ),
-                    );
-                  },
-                ),
+      appBar: AppBar(
+        title: const Text('Meus Pedidos'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/products', (route) => false),
+          tooltip: 'Voltar para produtos',
+        ),
+      ),
+      body: OrdersListView(
+        orders: controller.orders,
+        isLoading: controller.isLoading,
+      ),
     );
   }
 }

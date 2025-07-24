@@ -15,9 +15,9 @@ class CartItemTile extends StatelessWidget {
       child: ListTile(
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.network(item.image, width: 48, height: 48, fit: BoxFit.cover),
+          child: Image.network(item.imageUrl, width: 48, height: 48, fit: BoxFit.cover),
         ),
-        title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Row(
           children: [
             Text('Qtd: ${item.quantity}', style: const TextStyle(fontSize: 13)),

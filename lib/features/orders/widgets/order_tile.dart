@@ -12,7 +12,7 @@ class OrderTile extends StatelessWidget {
       title: Text('Pedido: ${order.id}'),
       subtitle: Text('Total: R\$ ${order.total.toStringAsFixed(2)}'),
       children: order.items.map((item) => ListTile(
-        title: Text(item.title),
+        title: Text(item.name),
         subtitle: Text('Qtd: ${item.quantity} | R\$ ${item.price.toStringAsFixed(2)}'),
       )).toList(),
     );
