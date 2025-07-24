@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/orders_controller.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class OrdersListPage extends StatefulWidget {
   const OrdersListPage({super.key});
@@ -15,10 +14,8 @@ class _OrdersListPageState extends State<OrdersListPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId != null) {
-        Provider.of<OrdersController>(context, listen: false).fetchOrders(userId);
-      }
+      final controller = context.read<OrdersController>();
+      controller.loadUserOrders(context);
     });
   }
 
