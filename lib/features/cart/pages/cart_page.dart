@@ -4,6 +4,7 @@ import '../../orders/controllers/orders_controller.dart';
 import '../../orders/models/order_model.dart';
 import '../controllers/cart_controller.dart';
 import 'package:provider/provider.dart';
+import '../../auth/controllers/auth_controller.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -13,6 +14,13 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Garante que o usuário está carregado ao entrar na tela
+    final authController = Provider.of<AuthController>(context, listen: false);
+    authController.loadCurrentUser();
+  }
   bool _isProcessing = false;
   String? _error;
   late CartController _controller;
@@ -38,6 +46,8 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     final cartController = context.watch<CartController>();
+    final authController = Provider.of<AuthController>(context, listen: false);
+    final orderController = Provider.of<OrdersController>(context, listen: false);
     return Scaffold(
       appBar: AppBar(title: const Text('Carrinho')),
       body: cartController.items.isEmpty
@@ -47,24 +57,37 @@ class _CartPageState extends State<CartPage> {
               itemBuilder: (context, index) {
                 final item = cartController.items[index];
                 return ListTile(
-                  leading: Image.network(item.image, width: 48, height: 48, fit: BoxFit.cover),
+                  leading: Image.network(
+                    item.image,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                  ),
                   title: Text(item.title),
-                  subtitle: Text('Qtd: ${item.quantity} | R\$ ${item.price.toStringAsFixed(2)}'),
+                  subtitle: Text(
+                    'Qtd: ${item.quantity} | R\$ ${item.price.toStringAsFixed(2)}',
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.remove),
-                        onPressed: () => cartController.decrementItem(item.productId),
+                        onPressed: () =>
+                            cartController.decrementItem(item.productId),
                       ),
-                      Text('${item.quantity}', style: const TextStyle(fontSize: 16)),
+                      Text(
+                        '${item.quantity}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
                       IconButton(
                         icon: const Icon(Icons.add),
-                        onPressed: () => cartController.incrementItem(item.productId),
+                        onPressed: () =>
+                            cartController.incrementItem(item.productId),
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),
-                        onPressed: () => cartController.removeItem(item.productId),
+                        onPressed: () =>
+                            cartController.removeItem(item.productId),
                       ),
                     ],
                   ),
@@ -77,7 +100,10 @@ class _CartPageState extends State<CartPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Total: R\$ ${cartController.total.toStringAsFixed(2)}', style: const TextStyle(fontSize: 18)),
+                  Text(
+                    'Total: R\$ ${cartController.total.toStringAsFixed(2)}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
                   ElevatedButton(
                     onPressed: _isProcessing
                         ? null
@@ -89,16 +115,22 @@ class _CartPageState extends State<CartPage> {
                               });
                             }
                             try {
-                              final orderController = OrdersController();
+                              final userId = authController.user?.uid ?? '';
                               final order = OrderModel(
-                                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                                id: DateTime.now().millisecondsSinceEpoch
+                                    .toString(),
                                 items: cartController.items,
                                 total: cartController.total,
                                 date: DateTime.now(),
+                                userId: userId,
                               );
                               await orderController.addOrder(order);
                               cartController.clear();
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Compra finalizada!')));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Compra finalizada!'),
+                                ),
+                              );
                               Navigator.pushNamed(context, '/orders');
                             } catch (e) {
                               if (mounted) {
@@ -106,9 +138,9 @@ class _CartPageState extends State<CartPage> {
                                   _error = 'Erro ao finalizar compra: $e';
                                 });
                               }
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(_error!)),
-                              );
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(SnackBar(content: Text(_error!)));
                             } finally {
                               if (mounted) {
                                 setState(() {
