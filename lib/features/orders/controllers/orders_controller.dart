@@ -29,8 +29,12 @@ class OrdersController extends ChangeNotifier {
     }
   }
 
+  /// Adiciona um novo pedido. Lança uma exceção amigável se o userId estiver vazio ou nulo.
   Future<void> addOrder(OrderModel order) async {
+    if (order.userId.trim().isEmpty) {
+      throw Exception('Usuário não autenticado. Faça login novamente para finalizar a compra.');
+    }
     await _service.addOrder(order);
-    await fetchOrders(order.id);
+    await fetchOrders(order.userId);
   }
 }

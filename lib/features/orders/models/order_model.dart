@@ -6,12 +6,14 @@ class OrderModel {
   final List<CartItemModel> items;
   final double total;
   final DateTime date;
+  final String userId;
 
   OrderModel({
     required this.id,
     required this.items,
     required this.total,
     required this.date,
+    required this.userId,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class OrderModel {
           .toList(),
       total: (json['total'] as num).toDouble(),
       date: DateTime.parse(json['date'] as String),
+      userId: json['userId'] as String,
     );
   }
 
@@ -31,6 +34,7 @@ class OrderModel {
       'items': items.map((e) => e.toJson()).toList(),
       'total': total,
       'date': date.toIso8601String(),
+      'userId': userId,
     };
   }
 }
