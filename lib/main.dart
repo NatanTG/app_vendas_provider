@@ -30,7 +30,11 @@ class VendasApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => getIt<ProductsController>()),
         ChangeNotifierProvider(create: (_) => getIt<CartController>()),
         ChangeNotifierProvider(create: (_) => getIt<OrdersController>()),
-        ChangeNotifierProvider(create: (_) => getIt<AuthController>()),
+        ChangeNotifierProvider(create: (_) {
+          final auth = getIt<AuthController>();
+          auth.loadCurrentUser(); // Garante usuário carregado ao iniciar o app
+          return auth;
+        }),
       ],
       child: MaterialApp(
         title: 'Vendas App',
